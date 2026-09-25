@@ -2,6 +2,7 @@ import { Check, Minus } from 'lucide-react';
 
 import { Reveal } from '@/components/motion/Reveal';
 import { Section, SectionIntro } from '@/components/ui/Section';
+import { ScrollRegion } from '@/components/ui/ScrollRegion';
 import { AUDIT_EVENTS, CONTROLS, ROLE_COLUMNS, ROLE_MATRIX } from '@/data/security';
 
 export function SecuritySection() {
@@ -25,7 +26,7 @@ export function SecuritySection() {
                 <p className="text-[15px] font-semibold text-white">Five roles out of the box</p>
                 <p className="text-[13px] text-night-muted">Default permissions, held per branch</p>
               </div>
-              <div className="overflow-x-auto">
+              <ScrollRegion label="Default role permissions">
                 <table className="w-full min-w-[620px] text-left text-[13px]">
                   <thead>
                     <tr className="border-b border-night-line align-bottom">
@@ -66,7 +67,7 @@ export function SecuritySection() {
                     ))}
                   </tbody>
                 </table>
-              </div>
+              </ScrollRegion>
             </div>
           </Reveal>
 

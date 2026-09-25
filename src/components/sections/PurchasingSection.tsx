@@ -2,8 +2,10 @@ import { Truck } from 'lucide-react';
 
 import { Reveal } from '@/components/motion/Reveal';
 import { ScrollRail } from '@/components/motion/ScrollRail';
+import { SampleDataTag } from '@/components/product/SampleDataTag';
 import { Badge } from '@/components/ui/Badge';
 import { FactList, Section, SectionIntro } from '@/components/ui/Section';
+import { ScrollRegion } from '@/components/ui/ScrollRegion';
 import { PURCHASE_NUMBER, SUPPLIER } from '@/data/demo';
 import { formatPKR } from '@/lib/format';
 
@@ -66,9 +68,12 @@ export function PurchasingSection() {
                   </p>
                 </div>
               </div>
-              <Badge tone="success">RECEIVED</Badge>
+              <div className="flex items-center gap-2">
+                <SampleDataTag />
+                <Badge tone="success">RECEIVED</Badge>
+              </div>
             </div>
-            <div className="overflow-x-auto">
+            <ScrollRegion label="Purchase lines">
               <table className="w-full min-w-[520px] text-left text-[12.5px]">
                 <thead className="text-[10.5px] tracking-wide text-text-muted uppercase">
                   <tr className="border-b border-border">
@@ -95,7 +100,7 @@ export function PurchasingSection() {
                   ))}
                 </tbody>
               </table>
-            </div>
+            </ScrollRegion>
             <dl className="space-y-1 px-5 py-4 text-[13px]">
               <div className="flex justify-between text-text-muted">
                 <dt>Tax</dt>
@@ -117,7 +122,6 @@ export function PurchasingSection() {
               </div>
             </div>
           </div>
-          <p className="mt-4 text-[12px] text-text-subtle">Sample purchase. Seeded, fictional supplier.</p>
         </Reveal>
 
         <div>

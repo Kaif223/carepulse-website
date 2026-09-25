@@ -38,6 +38,6 @@ export const FAQ = [
   },
   {
     q: 'Which currency does it use?',
-    a: 'Pakistani rupees (PKR). Money is stored as exact decimals, never floating-point, so line totals always add up to the printed total.',
+    a: 'Pakistani rupees (PKR). Amounts are stored as exact decimals, never floating-point, so totals and balances carry no floating-point rounding errors.',
   },
 ] as const;

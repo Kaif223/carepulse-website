@@ -7,14 +7,12 @@ import { AnimatePresence, motion } from 'motion/react';
 
 import { Logo } from '@/components/brand/Logo';
 import { ButtonLink } from '@/components/ui/Button';
-import { primaryNav, site } from '@/data/site';
+import { headerCta, signInCta } from '@/data/cta';
+import { primaryNav } from '@/data/navigation';
 import { cn } from '@/lib/cn';
 
 import { useActiveSection } from './useActiveSection';
 
-const primaryCta = site.contactEmail
-  ? { label: 'Talk to us', href: `mailto:${site.contactEmail}` }
-  : { label: 'Explore CarePulse', href: '#platform' };
 
 export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
@@ -71,7 +69,7 @@ export function SiteHeader() {
           )}
         >
           <a href="#top" aria-label="CarePulse — back to top" className="rounded-md">
-            <Logo />
+            <Logo priority />
           </a>
 
           <ul className="hidden items-center gap-1 lg:flex">
@@ -102,9 +100,9 @@ export function SiteHeader() {
           </ul>
 
           <div className="flex items-center gap-2">
-            {site.appUrl && (
+            {signInCta && (
               <a
-                href={site.appUrl}
+                href={signInCta.href}
                 className="hidden rounded-full px-3.5 py-2 text-[14px] font-medium text-ink-muted transition-colors hover:text-ink sm:inline-flex"
               >
                 Sign in
@@ -112,7 +110,7 @@ export function SiteHeader() {
             )}
             {/* Kept visible on phones; only the narrowest screens drop it in favour of the menu. */}
             <span className="max-[374px]:hidden">
-              <ButtonLink href={primaryCta.href}>{primaryCta.label}</ButtonLink>
+              <ButtonLink href={headerCta.href}>{headerCta.label}</ButtonLink>
             </span>
             <button
               ref={toggleRef}
@@ -151,11 +149,11 @@ export function SiteHeader() {
                   </li>
                 ))}
                 <li className="flex flex-col gap-2 pt-3">
-                  <ButtonLink href={primaryCta.href} size="lg" onClick={() => setOpen(false)}>
-                    {primaryCta.label}
+                  <ButtonLink href={headerCta.href} size="lg" onClick={() => setOpen(false)}>
+                    {headerCta.label}
                   </ButtonLink>
-                  {site.appUrl && (
-                    <ButtonLink href={site.appUrl} size="lg" variant="secondary">
+                  {signInCta && (
+                    <ButtonLink href={signInCta.href} size="lg" variant="secondary">
                       Sign in
                     </ButtonLink>
                   )}

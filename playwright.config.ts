@@ -22,6 +22,14 @@ export default defineConfig({
   ],
   webServer: {
     command: `pnpm build && pnpm start --port ${PORT}`,
+    // The production build refuses a local origin and a missing call to action
+    // (src/lib/site-env.ts); these values exist only for this local test build.
+    env: {
+      ...process.env,
+      NEXT_PUBLIC_SITE_URL: `http://localhost:${PORT}`,
+      SITE_URL_ALLOW_LOCAL: '1',
+      NEXT_PUBLIC_CONTACT_EMAIL: 'e2e@example.test',
+    },
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
     timeout: 240_000,

@@ -38,7 +38,6 @@ export function ReportsSection() {
       </div>
       <Reveal className="mt-14">
         <ReportsScreen />
-        <p className="mt-4 text-[12px] text-text-subtle">Sample figures. The tabs are interactive.</p>
       </Reveal>
     </Section>
   );

@@ -1,3 +1,5 @@
+import type { Metadata } from 'next';
+
 import { Hero } from '@/components/hero/Hero';
 import { SiteFooter } from '@/components/navigation/SiteFooter';
 import { SiteHeader } from '@/components/navigation/SiteHeader';
@@ -15,7 +17,13 @@ import { PurchasingSection } from '@/components/sections/PurchasingSection';
 import { ReportsSection } from '@/components/sections/ReportsSection';
 import { SecuritySection } from '@/components/sections/SecuritySection';
 import { SystemSection } from '@/components/sections/SystemSection';
+import { baseOpenGraph } from '@/lib/metadata';
 import { structuredData } from '@/lib/structured-data';
+
+export const metadata: Metadata = {
+  alternates: { canonical: '/' },
+  openGraph: { ...baseOpenGraph, url: '/' },
+};
 
 export default function HomePage() {
   return (

@@ -82,3 +82,55 @@ test('sitemap and robots are served', async ({ request }) => {
   const robots = await request.get('/robots.txt');
   expect(await robots.text()).toContain('Sitemap:');
 });
+
+test('has no automatically detectable accessibility violations', async ({ page }) => {
+  await page.goto('/');
+  await scrollThrough(page);
+  // Let the one-time reveals finish (the customer ledger posts its rows over ~3s);
+  // mid-fade text would be judged at partial opacity.
+  await page.waitForTimeout(3500);
+  const { default: AxeBuilder } = await import('@axe-core/playwright');
+  const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
+  const summary = results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).slice(0, 5).join(' | ')}`);
+  expect(summary).toEqual([]);
+});
+
+test('the closing call to action performs a real action', async ({ page }) => {
+  await page.goto('/');
+  const cta = page.locator('section[aria-labelledby="cta-title"] a').first();
+  await expect(cta).toHaveAttribute('href', /^(mailto:|https?:\/\/)/);
+});
+
+test('serves a branded, non-indexable 404', async ({ page }) => {
+  const response = await page.goto('/this-page-does-not-exist');
+  expect(response?.status()).toBe(404);
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('isn’t on the shelf');
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
+  await expect(page.locator('meta[name="robots"][content*="index, follow"]')).toHaveCount(0);
+  await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);
+  await expect(page.getByRole('link', { name: 'Back to CarePulse' })).toHaveAttribute('href', '/');
+});
+
+test('sends the security headers', async ({ request }) => {
+  const headers = (await request.get('/')).headers();
+  expect(headers['content-security-policy']).toContain("frame-ancestors 'none'");
+  expect(headers['x-content-type-options']).toBe('nosniff');
+  expect(headers['referrer-policy']).toBe('strict-origin-when-cross-origin');
+  expect(headers['permissions-policy']).toContain('camera=()');
+  expect(headers['strict-transport-security']).toContain('max-age=');
+});
+
+test('serves the brand icons, manifest and share image', async ({ page, request }) => {
+  await page.goto('/');
+  const icons = await page.$$eval('link[rel~="icon"], link[rel="apple-touch-icon"], link[rel="manifest"]', (links) =>
+    links.map((l) => l.getAttribute('href')!),
+  );
+  const ogImage = await page.locator('meta[property="og:image"]').getAttribute('content');
+  expect(icons.length).toBeGreaterThanOrEqual(4);
+  for (const href of [...icons, new URL(ogImage!).pathname]) {
+    const response = await request.get(href);
+    expect(response.ok(), href).toBe(true);
+  }
+  const manifest = await (await request.get('/manifest.webmanifest')).json();
+  for (const icon of manifest.icons) expect((await request.get(icon.src)).ok(), icon.src).toBe(true);
+});

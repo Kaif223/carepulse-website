@@ -124,7 +124,7 @@ export function PosScreen({ step }: { step: number }) {
               )}
             </AnimatePresence>
           </div>
-          <div className="mt-2 rounded-md border border-border bg-surface px-3 py-2.5 opacity-60">
+          <div className="mt-2 rounded-md border border-border bg-surface px-3 py-2.5">
             <span className="font-medium">Brufen 400mg Tablet</span>
             <span className="ml-2 text-[11px] text-text-muted">MED-BRU-400T</span>
           </div>
@@ -266,8 +266,9 @@ export function PosScreen({ step }: { step: number }) {
             </span>
             <span
               className={cn(
-                'flex h-8 flex-[1.6] items-center justify-center rounded-md bg-primary px-2 font-medium whitespace-nowrap text-white transition-opacity',
-                !hasCart && 'opacity-50',
+                'flex h-8 flex-[1.6] items-center justify-center rounded-md px-2 font-medium whitespace-nowrap transition-colors',
+                // The app's disabled button: muted, not faded, so the label stays legible.
+                hasCart ? 'bg-primary text-white' : 'bg-surface-muted text-text-muted',
                 step === 5 && 'ring-3 ring-primary/25',
               )}
             >

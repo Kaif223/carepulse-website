@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
 import { SiteHeader } from '@/components/navigation/SiteHeader';
-import { primaryNav } from '@/data/site';
+import { primaryNav } from '@/data/navigation';
 
 describe('SiteHeader', () => {
   it('only links to chapters that exist on the page', () => {

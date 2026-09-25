@@ -76,7 +76,8 @@ export function Hero() {
       </Container>
 
       <Container className="relative mt-14 sm:mt-16">
-        <figure>
+        {/* Bottom room for the receipt card, which hangs below the window on desktop. */}
+        <figure className="pb-10 lg:pb-20">
           <HeroParallax
             window={
               <div className="hero-product" style={delay(560)}>
@@ -102,9 +103,6 @@ export function Hero() {
             The CarePulse dashboard for Lahore Main Pharmacy: today&apos;s sales, the open cash shift, low-stock and
             expiring-batch alerts and the most recent invoices, with a printed receipt and a FEFO batch allocation.
           </figcaption>
-          <p className="mt-6 text-center text-[12px] text-text-subtle lg:mt-16">
-            Product interface shown with sample data.
-          </p>
         </figure>
       </Container>
     </section>

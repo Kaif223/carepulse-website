@@ -5,6 +5,7 @@ import { useId, useRef, useState, type KeyboardEvent } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { Printer } from 'lucide-react';
 
+import { SampleDataTag } from '@/components/product/SampleDataTag';
 import { Badge } from '@/components/ui/Badge';
 import { DEMO_BRANCH } from '@/data/demo';
 import { cn } from '@/lib/cn';
@@ -52,9 +53,12 @@ export function ReportsScreen() {
           <p className="text-[17px] font-semibold tracking-[-0.01em] text-ink">Reports</p>
           <p className="text-[13px] text-text-muted">{DEMO_BRANCH.name} · Today</p>
         </div>
-        <span className="mb-4 inline-flex h-8 items-center gap-1.5 rounded-md border border-border px-3 text-[12.5px] font-medium text-ink">
-          <Printer className="size-3.5" aria-hidden /> Print
-        </span>
+        <div className="mb-4 flex items-center gap-3">
+          <SampleDataTag />
+          <span className="inline-flex h-8 items-center gap-1.5 rounded-md border border-border px-3 text-[12.5px] font-medium text-ink">
+            <Printer className="size-3.5" aria-hidden /> Print
+          </span>
+        </div>
         <div role="tablist" aria-label="Report" className="-mb-px flex w-full gap-1 overflow-x-auto">
           {TABS.map((name, index) => (
             <button

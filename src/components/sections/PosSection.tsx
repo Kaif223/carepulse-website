@@ -31,7 +31,8 @@ export function PosSection() {
     triggerRef.current = ScrollTrigger.create({
       trigger: stageRef.current,
       start: 'top top',
-      end: `+=${POS_STEPS.length * 55}%`,
+      // Roughly half a screen of scrolling per step: long enough to read, short enough not to drag.
+      end: `+=${POS_STEPS.length * 45}%`,
       pin: true,
       onUpdate: (self) => setStep(Math.min(last, Math.floor(self.progress * POS_STEPS.length))),
     });
@@ -65,53 +66,54 @@ export function PosSection() {
         />
       </Container>
 
-      <div ref={stageRef} className="flex items-center py-14 lg:min-h-screen lg:py-10">
+      <div ref={stageRef} className="flex items-center py-14 lg:min-h-screen lg:pt-20 lg:pb-6">
         <Container className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[320px_1fr] lg:gap-14">
           <ol className="hidden space-y-1 lg:block" aria-label="POS walkthrough steps">
             {POS_STEPS.map((item, index) => {
               const active = index === step;
               return (
-                <li key={item.key}>
+                <li
+                  key={item.key}
+                  className={cn(
+                    'group rounded-xl transition-colors duration-300',
+                    active ? 'bg-background' : 'hover:bg-background/60',
+                  )}
+                >
                   <button
                     type="button"
                     onClick={() => goTo(index)}
                     aria-current={active ? 'step' : undefined}
-                    className={cn(
-                      'group w-full rounded-xl px-4 py-3 text-left transition-colors duration-300',
-                      active ? 'bg-background' : 'hover:bg-background/60',
-                    )}
+                    className="flex w-full items-baseline gap-3 rounded-xl px-4 py-3 text-left"
                   >
-                    <span className="flex items-baseline gap-3">
-                      <span
-                        className={cn(
-                          'font-mono text-[11px] tabular-nums transition-colors',
-                          active ? 'text-primary' : 'text-text-subtle',
-                        )}
-                      >
-                        {String(index + 1).padStart(2, '0')}
-                      </span>
-                      <span
-                        className={cn(
-                          'text-[15.5px] font-semibold tracking-[-0.01em] transition-colors',
-                          active ? 'text-ink' : 'text-text-muted group-hover:text-ink-muted',
-                        )}
-                      >
-                        {item.title}
-                      </span>
+                    <span
+                      className={cn(
+                        'font-mono text-[11px] tabular-nums transition-colors',
+                        active ? 'text-primary' : 'text-text-subtle',
+                      )}
+                    >
+                      {String(index + 1).padStart(2, '0')}
                     </span>
                     <span
                       className={cn(
-                        'grid transition-[grid-template-rows,opacity] duration-500 ease-out',
-                        active ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0',
+                        'text-[15.5px] font-semibold tracking-[-0.01em] transition-colors',
+                        active ? 'text-ink' : 'text-text-muted group-hover:text-ink-muted',
                       )}
                     >
-                      <span className="overflow-hidden">
-                        <span className="block pt-1.5 pl-[26px] text-[14px] leading-relaxed text-ink-muted">
-                          {item.body}
-                        </span>
-                      </span>
+                      {item.title}
                     </span>
                   </button>
+                  {/* Outside the button, so the button's name is just the step title. */}
+                  <div
+                    aria-hidden={!active}
+                    className={cn(
+                      'grid transition-[grid-template-rows,opacity] duration-500 ease-out',
+                      active ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0',
+                    )}
+                  >
+                    <p className="overflow-hidden pr-4 pl-[42px] text-[14px] leading-relaxed text-ink-muted">
+                      <span className="block pb-3">{item.body}</span>
+                    </p>
+                  </div>
                 </li>
               );
             })}
@@ -119,7 +121,8 @@ export function PosSection() {
 
           <div>
             <ProductWindow>
-              <div aria-hidden className="h-[580px] select-none sm:h-[620px]">
+              {/* On desktop the window shrinks with short screens (down to what the payment step needs) so the pinned stage never hides under the header. */}
+              <div aria-hidden className="h-[580px] select-none sm:h-[620px] lg:h-[clamp(560px,calc(100svh-104px),620px)]">
                 <PosScreen step={step} />
               </div>
             </ProductWindow>

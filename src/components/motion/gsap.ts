@@ -25,8 +25,12 @@ export function loadGsap(): Promise<GsapKit> {
   return kit;
 }
 
-/** Wide screen and motion allowed: the only context that gets pinned choreography. */
-export const CINEMATIC_QUERY = '(min-width: 1024px) and (prefers-reduced-motion: no-preference)';
+/**
+ * Wide, tall enough to hold a pinned stage, and motion allowed: the only
+ * context that gets pinned choreography. Below 640px of height a pinned stage
+ * would crop its own content, so those screens get the static layout.
+ */
+export const CINEMATIC_QUERY = '(min-width: 1024px) and (min-height: 640px) and (prefers-reduced-motion: no-preference)';
 
 /**
  * Runs a GSAP scene scoped to `scope` while `query` matches.

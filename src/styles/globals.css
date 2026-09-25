@@ -25,32 +25,36 @@
   --color-surface: #ffffff;
   --color-surface-muted: #f1f5f9;
 
-  /* ---- text (from the app) ---- */
+  /* ---- text ----
+     The app's muted greys (#64748b, #94a3b8) fall below WCAG AA (4.5:1) on
+     this site's light and tinted surfaces at caption sizes, so each is one
+     step darker here: text-muted passes on every light surface, text-subtle
+     on white and the page background. */
   --color-ink: #0f172a;
   --color-ink-muted: #475569;
   --color-text: #0f172a;
-  --color-text-muted: #64748b;
-  --color-text-subtle: #94a3b8;
+  --color-text-muted: #5e6d82;
+  --color-text-subtle: #64748b;
 
   /* ---- structure (from the app) ---- */
   --color-border: #e2e8f0;
   --color-border-strong: #cbd5e1;
   --color-ring: #93c5fd;
 
-  /* ---- status (from the app) ---- */
-  --color-success: #16a34a;
+  /* ---- status (from the app; foregrounds one shade darker for AA on their tints) ---- */
+  --color-success: #15803d;
   --color-success-bg: #f0fdf4;
   --color-success-border: #bbf7d0;
-  --color-warning: #d97706;
+  --color-warning: #b45309;
   --color-warning-bg: #fffbeb;
   --color-warning-border: #fde68a;
-  --color-danger: #dc2626;
+  --color-danger: #b91c1c;
   --color-danger-bg: #fef2f2;
   --color-danger-border: #fecaca;
-  --color-info: #2563eb;
+  --color-info: #1d4ed8;
   --color-info-bg: #eff6ff;
   --color-info-border: #bfdbfe;
-  --color-neutral: #64748b;
+  --color-neutral: #475569;
   --color-neutral-bg: #f1f5f9;
   --color-neutral-border: #e2e8f0;
 

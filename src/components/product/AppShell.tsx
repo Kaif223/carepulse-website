@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 
 import { LogoMark } from '@/components/brand/Logo';
+import { SampleDataTag } from '@/components/product/SampleDataTag';
 import { DEMO_BRANCH } from '@/data/demo';
 import { cn } from '@/lib/cn';
 
@@ -71,6 +72,7 @@ export function ProductWindow({ children, className }: { children: ReactNode; cl
         <span className="size-2.5 rounded-full bg-[#e2e8f0]" />
         <span className="size-2.5 rounded-full bg-[#e2e8f0]" />
         <span className="size-2.5 rounded-full bg-[#e2e8f0]" />
+        <SampleDataTag className="ml-auto" />
       </div>
       {children}
     </div>
@@ -97,7 +99,7 @@ export function AppShell({
         )}
       >
         <div className="flex h-12 items-center gap-2 border-b border-border px-3.5">
-          <LogoMark size="sm" />
+          <LogoMark size={22} />
           {!collapsed && <span className="text-[13px] font-semibold">CarePulse</span>}
         </div>
         <nav className="space-y-3.5 px-2.5 py-3.5">
@@ -204,8 +206,8 @@ export function Kpi({
         <Icon className="size-3.5" aria-hidden />
         {label}
       </p>
-      <div className="mt-1.5 flex items-center gap-2">
-        <p className="text-[18px] font-semibold tracking-[-0.01em] tabular-nums">{value}</p>
+      <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
+        <p className="text-[18px] font-semibold tracking-[-0.01em] whitespace-nowrap tabular-nums">{value}</p>
         {badge}
       </div>
       <p className="mt-0.5 text-[10.5px] text-text-subtle">{caption}</p>

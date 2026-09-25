@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react';
 
-import { LogoMark } from '@/components/brand/Logo';
+import { LogoIcon } from '@/components/brand/Logo';
 import { CINEMATIC_QUERY, useGsapScene } from '@/components/motion/gsap';
 import { Container } from '@/components/ui/Container';
 import { SYSTEM_CORE, SYSTEM_NODES, SYSTEM_STEPS, SYSTEM_VIEWBOX, linkPath } from '@/data/system';
@@ -88,7 +88,7 @@ export function SystemSection() {
     >
       <div aria-hidden className="bg-grid-night mask-fade-y pointer-events-none absolute inset-0" />
       <div ref={stageRef} className="relative flex min-h-screen items-center py-24 lg:pt-16 lg:pb-0">
-        <Container className="grid grid-cols-1 items-center gap-14 lg:grid-cols-[minmax(0,400px)_1fr] lg:gap-16">
+        <Container className="grid grid-cols-1 items-center gap-14 lg:grid-cols-[minmax(0,340px)_1fr] lg:gap-10 xl:grid-cols-[minmax(0,400px)_1fr] xl:gap-16">
           <div>
             <p className="mb-5 inline-flex items-center gap-3 font-mono text-[12px] font-medium tracking-[0.14em] text-night-muted uppercase">
               <span className="text-[#7aa2ff]">01</span>
@@ -104,17 +104,27 @@ export function SystemSection() {
             <ol className="mt-9 space-y-5">
               {SYSTEM_STEPS.map((step, index) => {
                 const isActive = activeStep === null || activeStep === index;
+                // While the scene plays, only the current step shows its body, so the
+                // column fits short laptop screens (e.g. 1280×720) without clipping.
+                const isCollapsed = activeStep !== null && !isActive;
                 return (
                   <li
                     key={step.title}
                     className={cn(
                       'relative border-l pl-5 transition-[opacity,border-color] duration-500',
-                      isActive ? 'border-[#7aa2ff] opacity-100' : 'border-night-line opacity-40',
+                      isActive ? 'border-[#7aa2ff] opacity-100' : 'border-night-line opacity-60',
                     )}
                   >
                     <p className="font-mono text-[11px] text-night-muted tabular-nums">0{index + 1}</p>
                     <h3 className="mt-1 text-[17px] font-semibold tracking-[-0.01em] text-white">{step.title}</h3>
-                    <p className="mt-1.5 text-[15px] leading-relaxed text-night-muted">{step.body}</p>
+                    <div
+                      className={cn(
+                        'grid transition-[grid-template-rows] duration-500 ease-out',
+                        isCollapsed ? 'grid-rows-[0fr]' : 'grid-rows-[1fr]',
+                      )}
+                    >
+                      <p className="overflow-hidden pt-1.5 text-[15px] leading-relaxed text-night-muted">{step.body}</p>
+                    </div>
                   </li>
                 );
               })}
@@ -171,15 +181,19 @@ function Diagram() {
         ))}
       </svg>
 
+      {/* Centering (CSS translate) lives on wrappers; GSAP animates only the inner
+          elements, because it folds an existing CSS translate into its own transform. */}
       <div
-        className="sys-core absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center"
+        className="absolute -translate-x-1/2 -translate-y-1/2"
         style={{ left: pct(SYSTEM_CORE.x, width), top: pct(SYSTEM_CORE.y, height) }}
       >
-        <div className="flex size-[104px] items-center justify-center rounded-full bg-night-raised ring-1 ring-[#2c3d66] shadow-[0_0_0_10px_rgb(37_99_235/0.08),0_0_60px_rgb(37_99_235/0.35)]">
-          <LogoMark size="lg" />
+        <div className="sys-core flex flex-col items-center">
+          <div className="rounded-[18px] shadow-[0_0_0_10px_rgb(37_99_235/0.1),0_0_60px_rgb(37_99_235/0.4)]">
+            <LogoIcon size={96} className="size-[76px] rounded-[18px] xl:size-24 xl:rounded-[22px]" />
+          </div>
+          <p className="mt-3 font-display text-[18px] font-semibold tracking-[-0.02em] text-white">CarePulse</p>
+          <p className="rounded-full bg-night/85 px-2 font-mono text-[10.5px] tracking-wide text-night-muted">one database · one set of rules</p>
         </div>
-        <p className="mt-3 font-display text-[18px] font-semibold tracking-[-0.02em] text-white">CarePulse</p>
-        <p className="rounded-full bg-night/85 px-2 font-mono text-[10.5px] tracking-wide text-night-muted">one database · one set of rules</p>
       </div>
 
       {SYSTEM_NODES.map((node) => {
@@ -187,29 +201,36 @@ function Diagram() {
         return (
           <div
             key={node.id}
-            className="sys-node absolute w-[176px] -translate-x-1/2 -translate-y-1/2"
+            // Width is a share of the diagram (176px of 720) so nodes scale with it instead of colliding at ~1024px.
+            className="absolute w-[24.5%] -translate-x-1/2 -translate-y-1/2"
             style={{ left: pct(node.x, width), top: pct(node.y, height) }}
           >
-            <div className="relative rounded-xl bg-night-raised px-3.5 py-3">
-              <span aria-hidden className="sys-dashed absolute inset-0 rounded-xl border border-dashed border-[#334166]" />
-              <span aria-hidden className="sys-solid absolute inset-0 rounded-xl border border-[#3b5bdb]/70" />
-              <p className="relative flex items-center gap-2 text-[14px] font-semibold text-white">
-                <Icon className="size-4 text-[#7aa2ff]" aria-hidden />
-                {node.label}
-              </p>
-              <p className="sys-role relative mt-1 text-[11.5px] leading-snug text-night-muted">{node.role}</p>
+            <div className="sys-node relative">
+              <div className="relative rounded-xl bg-night-raised px-3 py-2.5 xl:px-3.5 xl:py-3">
+                <span aria-hidden className="sys-dashed absolute inset-0 rounded-xl border border-dashed border-[#334166]" />
+                <span aria-hidden className="sys-solid absolute inset-0 rounded-xl border border-[#3b5bdb]/70" />
+                <p className="relative flex items-center gap-2 text-[13px] font-semibold text-white xl:text-[14px]">
+                  <Icon className="size-4 text-[#7aa2ff]" aria-hidden />
+                  {node.label}
+                </p>
+                <p className="sys-role relative mt-1 text-[11px] leading-snug text-night-muted xl:text-[11.5px]">{node.role}</p>
+              </div>
+              {node.event && (
+                <div
+                  className={cn(
+                    'absolute left-1/2 -translate-x-1/2',
+                    node.y < SYSTEM_CORE.y ? 'top-full mt-2' : 'bottom-full mb-2',
+                  )}
+                >
+                  <p
+                    data-node={node.id}
+                    className="sys-event rounded-full bg-[#1b2a52] px-2.5 py-1 font-mono text-[10px] font-medium whitespace-nowrap text-[#b9ccff] ring-1 ring-[#2f4a8f]"
+                  >
+                    {node.event}
+                  </p>
+                </div>
+              )}
             </div>
-            {node.event && (
-              <p
-                data-node={node.id}
-                className={cn(
-                  'sys-event absolute left-1/2 -translate-x-1/2 rounded-full bg-[#1b2a52] px-2.5 py-1 font-mono text-[10px] font-medium whitespace-nowrap text-[#b9ccff] ring-1 ring-[#2f4a8f]',
-                  node.y < SYSTEM_CORE.y ? 'top-full mt-2' : 'bottom-full mb-2',
-                )}
-              >
-                {node.event}
-              </p>
-            )}
           </div>
         );
       })}
@@ -226,7 +247,7 @@ function MobileDiagram() {
   return (
     <div className="lg:hidden">
       <div className="flex items-center gap-3">
-        <LogoMark size="lg" />
+        <LogoIcon size={48} className="rounded-[11px]" />
         <div>
           <p className="font-display text-[18px] font-semibold text-white">CarePulse</p>
           <p className="font-mono text-[11px] text-night-muted">one database · one set of rules</p>

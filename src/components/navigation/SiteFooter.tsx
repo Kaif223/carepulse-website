@@ -1,6 +1,6 @@
 import { Logo } from '@/components/brand/Logo';
 import { Container } from '@/components/ui/Container';
-import { site } from '@/data/site';
+import { contactCta, signInCta } from '@/data/cta';
 
 const COLUMNS = [
   {
@@ -28,8 +28,8 @@ const COLUMNS = [
       { label: 'Who it’s for', href: '#who-its-for' },
       { label: 'Modules', href: '#modules' },
       { label: 'FAQ', href: '#faq' },
-      ...(site.appUrl ? [{ label: 'Sign in', href: site.appUrl }] : []),
-      ...(site.contactEmail ? [{ label: 'Contact', href: `mailto:${site.contactEmail}` }] : []),
+      ...(signInCta ? [signInCta] : []),
+      ...(contactCta ? [{ label: 'Contact', href: contactCta.href }] : []),
     ],
   },
 ];

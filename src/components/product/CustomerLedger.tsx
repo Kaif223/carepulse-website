@@ -5,7 +5,9 @@ import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useInView } from 'motion/react';
 
 import { usePrefersReducedMotion } from '@/components/motion/useMediaQuery';
+import { SampleDataTag } from '@/components/product/SampleDataTag';
 import { Badge } from '@/components/ui/Badge';
+import { ScrollRegion } from '@/components/ui/ScrollRegion';
 import { CUSTOMER } from '@/data/demo';
 import { cn } from '@/lib/cn';
 import { formatPKR } from '@/lib/format';
@@ -62,7 +64,10 @@ export function CustomerLedger() {
     <div ref={ref} className="overflow-hidden rounded-2xl border border-border bg-white shadow-cp-md">
       <div className="flex flex-wrap items-start justify-between gap-4 border-b border-border px-5 py-5 sm:px-6">
         <div>
-          <p className="text-[17px] font-semibold tracking-[-0.01em] text-ink">{CUSTOMER.name}</p>
+          <p className="flex items-center gap-2.5 text-[17px] font-semibold tracking-[-0.01em] text-ink">
+            {CUSTOMER.name}
+            <SampleDataTag />
+          </p>
           <p className="text-[13px] text-text-muted">+92-300-0000102 · Credit limit {formatPKR(CUSTOMER.creditLimit)}</p>
         </div>
         <div className="text-right">
@@ -93,7 +98,7 @@ export function CustomerLedger() {
         ))}
       </div>
 
-      <div className="overflow-x-auto">
+      <ScrollRegion label="Customer ledger">
         <table className="w-full min-w-[560px] text-left text-[13px]">
           <thead className="text-[10.5px] tracking-wide text-text-muted uppercase">
             <tr className="border-b border-border">
@@ -137,7 +142,7 @@ export function CustomerLedger() {
             )}
           </tbody>
         </table>
-      </div>
+      </ScrollRegion>
       <div className="flex items-center justify-between gap-3 border-t border-border bg-background px-5 py-3 text-[12px] text-text-muted sm:px-6">
         <span>Balance is the sum of the ledger — it cannot be edited directly.</span>
         <Badge tone="credit">Udhaar</Badge>

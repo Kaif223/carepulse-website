@@ -60,6 +60,24 @@ describe('FefoDemo', () => {
     await user.click(screen.getByRole('button', { name: 'Increase quantity' }));
     expect(screen.getByText('3 Strip = 30 Tablet')).toBeInTheDocument();
   });
+
+  it('follows the radio group keyboard pattern for packaging', async () => {
+    const user = userEvent.setup();
+    render(<FefoDemo />);
+    const radios = screen.getAllByRole('radio');
+    // Only the checked option is a tab stop.
+    expect(radios.map((r) => r.tabIndex)).toEqual([-1, -1, 0]);
+
+    radios[2]!.focus();
+    await user.keyboard('{ArrowRight}');
+    expect(screen.getByRole('radio', { name: 'Tablet' })).toHaveAttribute('aria-checked', 'true');
+    expect(screen.getByRole('radio', { name: 'Tablet' })).toHaveFocus();
+
+    await user.keyboard('{End}');
+    expect(screen.getByRole('radio', { name: 'Box' })).toHaveAttribute('aria-checked', 'true');
+    await user.keyboard('{ArrowLeft}');
+    expect(screen.getByText('2 Strip = 20 Tablet')).toBeInTheDocument();
+  });
 });
 
 describe('FaqSection', () => {

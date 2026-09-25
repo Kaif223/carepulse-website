@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 
 import { LayoutGroup, motion, useInView } from 'motion/react';
 import { Minus, Plus } from 'lucide-react';
@@ -106,30 +106,7 @@ export function FefoDemo() {
               <Plus className="size-4" aria-hidden />
             </button>
           </div>
-          <div className="flex rounded-full bg-surface-muted p-1" role="radiogroup" aria-label="Packaging">
-            {PANADOL.units.map((option, index) => (
-              <button
-                key={option.name}
-                type="button"
-                role="radio"
-                aria-checked={index === unitIndex}
-                onClick={() => setUnitIndex(index)}
-                className={cn(
-                  'relative rounded-full px-3 py-1.5 text-[13px] font-medium transition-colors',
-                  index === unitIndex ? 'text-ink' : 'text-text-muted hover:text-ink',
-                )}
-              >
-                {index === unitIndex && (
-                  <motion.span
-                    layoutId="fefo-unit"
-                    className="absolute inset-0 rounded-full bg-white shadow-cp-sm"
-                    transition={{ type: 'spring', stiffness: 500, damping: 38 }}
-                  />
-                )}
-                <span className="relative">{option.name}</span>
-              </button>
-            ))}
-          </div>
+          <PackagingRadioGroup value={unitIndex} onChange={setUnitIndex} />
         </div>
       </div>
 
@@ -279,4 +256,66 @@ function BatchBadge({ batch, excludedReason }: { batch: DemoBatch; excludedReaso
   if (days < 0) return <Badge tone="danger">Expired</Badge>;
   if (days <= 30) return <Badge tone="warning">Near expiry</Badge>;
   return <Badge tone="success">Valid</Badge>;
+}
+
+/**
+ * Tablet / Strip / Box — one exclusive choice, so it follows the ARIA radio
+ * group pattern: a single tab stop on the checked option, arrow keys move
+ * and select, Home/End jump to the ends.
+ */
+function PackagingRadioGroup({ value, onChange }: { value: number; onChange: (index: number) => void }) {
+  const refs = useRef<Array<HTMLButtonElement | null>>([]);
+  const count = PANADOL.units.length;
+
+  function onKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
+    const moves: Record<string, number> = {
+      ArrowRight: value + 1,
+      ArrowDown: value + 1,
+      ArrowLeft: value - 1,
+      ArrowUp: value - 1,
+      Home: 0,
+      End: count - 1,
+    };
+    const target = moves[event.key];
+    if (target === undefined) return;
+    event.preventDefault();
+    const next = (target + count) % count;
+    onChange(next);
+    refs.current[next]?.focus();
+  }
+
+  return (
+    <div className="flex rounded-full bg-surface-muted p-1" role="radiogroup" aria-label="Packaging">
+      {PANADOL.units.map((option, index) => {
+        const checked = index === value;
+        return (
+          <button
+            key={option.name}
+            ref={(el) => {
+              refs.current[index] = el;
+            }}
+            type="button"
+            role="radio"
+            aria-checked={checked}
+            tabIndex={checked ? 0 : -1}
+            onClick={() => onChange(index)}
+            onKeyDown={onKeyDown}
+            className={cn(
+              'relative rounded-full px-3 py-1.5 text-[13px] font-medium transition-colors',
+              checked ? 'text-ink' : 'text-text-muted hover:text-ink',
+            )}
+          >
+            {checked && (
+              <motion.span
+                layoutId="fefo-unit"
+                className="absolute inset-0 rounded-full bg-white shadow-cp-sm"
+                transition={{ type: 'spring', stiffness: 500, damping: 38 }}
+              />
+            )}
+            <span className="relative">{option.name}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
 }

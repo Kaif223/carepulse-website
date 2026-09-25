@@ -3,6 +3,7 @@ import { Inter, Inter_Tight, JetBrains_Mono } from 'next/font/google';
 
 import { MotionProvider } from '@/components/motion/MotionProvider';
 import { site } from '@/data/site';
+import { baseOpenGraph } from '@/lib/metadata';
 
 import '@/styles/globals.css';
 
@@ -25,30 +26,10 @@ export const metadata: Metadata = {
   title: { default: site.title, template: `%s · ${site.name}` },
   description: site.description,
   applicationName: site.name,
-  alternates: { canonical: '/' },
-  keywords: [
-    'pharmacy management software',
-    'pharmacy POS',
-    'medical store software',
-    'retail POS',
-    'FEFO inventory',
-    'batch and expiry tracking',
-    'customer credit ledger',
-    'udhaar',
-    'cash shift reconciliation',
-    'multi-branch pharmacy',
-    'Pakistan',
-  ],
-  openGraph: {
-    type: 'website',
-    url: '/',
-    siteName: site.name,
-    title: site.title,
-    description: site.description,
-    locale: site.locale,
-  },
+  openGraph: baseOpenGraph,
   twitter: { card: 'summary_large_image', title: site.title, description: site.description },
-  robots: { index: true, follow: true },
+  // Indexable is the default; only Vercel previews opt out (lib/site-env.ts).
+  ...(site.indexable ? {} : { robots: { index: false, follow: false } }),
   formatDetection: { telephone: false },
 };
 

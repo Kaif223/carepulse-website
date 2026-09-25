@@ -51,9 +51,7 @@ export function CashShiftClose() {
         <Line label="Opening float" value={formatPKR(SHIFT.openingFloat)} />
         <Line label="Cash in" value={`+ ${formatPKR(SHIFT.cashIn)}`} />
         <Line label="Cash out" value={`− ${formatPKR(SHIFT.cashOut)}`} />
-        <div className="border-t border-border pt-2">
-          <Line label="System expected" value={formatPKR(EXPECTED)} strong />
-        </div>
+        <Line label="System expected" value={formatPKR(EXPECTED)} strong className="border-t border-border pt-2" />
       </dl>
       <div className="border-t border-border px-5 py-4">
         <p className="text-[12.5px] font-medium text-ink">Counted cash</p>
@@ -93,9 +91,9 @@ export function CashShiftClose() {
   );
 }
 
-function Line({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
+function Line({ label, value, strong, className }: { label: string; value: string; strong?: boolean; className?: string }) {
   return (
-    <div className={cn('flex justify-between gap-4', strong ? 'font-semibold text-ink' : 'text-ink-muted')}>
+    <div className={cn('flex justify-between gap-4', strong ? 'font-semibold text-ink' : 'text-ink-muted', className)}>
       <dt>{label}</dt>
       <dd className="tabular-nums">{value}</dd>
     </div>

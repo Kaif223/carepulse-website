@@ -44,7 +44,6 @@ export function CustomersSection() {
         </div>
         <Reveal className="lg:sticky lg:top-28 lg:self-start">
           <CustomerLedger />
-          <p className="mt-4 text-[12px] text-text-subtle">Sample account. Seeded, fictional customer.</p>
         </Reveal>
       </div>
     </Section>

@@ -31,23 +31,28 @@ pnpm test:e2e     # builds, serves on :3200, runs desktop/tablet/mobile
 
 ## Configuration
 
-Copy `.env.example` to `.env.local`.
+Copy `.env.example` to `.env.local` for local work; on Vercel, set the same names in Project Settings. `pnpm dev`
+needs none of them. **`pnpm build` refuses to run** (a clear error listing every problem) unless:
 
-| Variable | Purpose |
+| Variable | Rule |
 |---|---|
-| `NEXT_PUBLIC_SITE_URL` | Public origin. Used for canonical URLs, sitemap, robots and Open Graph. **Set this for production.** |
-| `NEXT_PUBLIC_APP_URL` | Optional. Adds a "Sign in" link to the application. Hidden when unset. |
-| `NEXT_PUBLIC_CONTACT_EMAIL` | Optional. Changes the CTAs to "Talk to us" (mailto). When unset in development, the final CTA shows a dashed **DEV PLACEHOLDER** notice. Production shows nothing. |
+| `NEXT_PUBLIC_SITE_URL` | **Required.** Public https origin — used for canonical, sitemap, robots and Open Graph. Localhost, placeholders (`*.example`, `YOUR-DOMAIN`) and invalid URLs are rejected. |
+| `NEXT_PUBLIC_CONTACT_EMAIL` | Optional, but **at least one** of this and `NEXT_PUBLIC_APP_URL` is required: the closing CTA must do something real. Becomes "Talk to us" (mailto). |
+| `NEXT_PUBLIC_APP_URL` | Optional (see above). Adds "Sign in"; becomes the closing CTA when no email is set. |
+| `SITE_URL_ALLOW_LOCAL` | Local testing only (`=1` lets a build use a localhost origin; the Playwright suite sets it). Never on a deployment. |
 
-The site never renders a link to a page or service that doesn't exist.
+Vercel **preview** deployments need no site URL: they use their own `VERCEL_URL` and are served `noindex` with a
+disallow-all `robots.txt`, so previews never reach search engines. Validation lives in `src/lib/site-env.ts` (unit
+tested) and runs from `next.config.ts`.
 
 ## Structure
 
 ```text
 src/
-├── app/                 layout (fonts, metadata), page, sitemap, robots, OG image, icon
+├── app/                 layout, page, not-found, sitemap, robots, manifest, icons + OG image (brand kit)
+├── assets/brand/        brand-kit SVGs rendered in the page (synced, never edited here)
 ├── components/
-│   ├── brand/           Logo — the HeartPulse-on-blue mark the app itself uses
+│   ├── brand/           Logo, LogoMark, LogoIcon — the approved brand-kit SVGs
 │   ├── navigation/      sticky header (active-chapter tracking, mobile menu), footer
 │   ├── hero/            hero + desktop-only parallax wrapper
 │   ├── product/         recreated product screens: dashboard, POS, FEFO demo, ledger, cash shift, reports, transfer
@@ -55,9 +60,24 @@ src/
 │   ├── motion/          Reveal, ScrollRail, the GSAP loader/hook, media-query hooks
 │   └── ui/              Container, ButtonLink, Section/SectionIntro/FactList, Badge
 ├── data/                site config, sample data, POS steps, system diagram, roles, FAQ
-├── lib/                 fefo.ts (port of the app's FEFO planner), formatting, structured data
+├── lib/                 site-env.ts (config rules), fefo.ts (port of the app's FEFO planner), metadata, structured data
 └── styles/globals.css   tokens + hero keyframes
 ```
+
+## Brand assets
+
+The approved **CarePulse brand kit** lives in the application repository at
+`pharmacy-management/apps/web/src/assets/carepulse-brand-kit` and is the source of truth. This site keeps verbatim
+copies where Next.js needs them — `src/app/` (favicon.ico, icon.svg, apple-icon.png, opengraph-image.png),
+`public/` (manifest icons) and `src/assets/brand/` (logo, mark, icon rendered in the page). After the kit changes:
+
+```bash
+scripts/sync-brand-kit.sh ../pharmacy-management
+```
+
+`icon.svg` comes from the app's `public/favicon.svg`, which is the kit's `favicon.svg` as published there. The kit's
+`carepulse-icon-showcase.png` is intentionally unused: the page shows the product itself rather than a presentation
+render of the icon, and no other imagery is used — no stock photography.
 
 ## How motion is organised
 
@@ -70,8 +90,13 @@ src/
 
 Rules the code follows:
 
-- **The markup is the final state.** Scroll scenes rewind it in JS and then play forward. Without JS, on mobile, or
-  under reduced motion, visitors see the finished diagram or screen straight away.
+- **Pinned scenes render their final state.** The diagram and POS markup is finished; GSAP rewinds it and plays
+  forward only in the cinematic context. The smaller demos (FEFO, ledger, cash shift, transfer) start from their
+  opening state and play once on view — immediately complete under reduced motion.
+- **Cinematic context** = `(min-width: 1024px) and (min-height: 640px) and (prefers-reduced-motion: no-preference)`.
+  Shorter screens get the static layout rather than a pinned stage that crops itself.
+- **Never animate an element that also carries a CSS `translate`.** GSAP folds it into its own transform and loses
+  the centering; positioned wrappers centre, inner elements animate (see `SystemSection`).
 - **GSAP isn't downloaded unless it's used.** `useGsapScene(scope, CINEMATIC_QUERY, setup)` fetches GSAP only when
   `(min-width: 1024px) and (prefers-reduced-motion: no-preference)` matches. Its scenes run inside `gsap.matchMedia`,
   so they're reverted on unmount, resize or a preference change. Phones never load GSAP.
@@ -100,9 +125,21 @@ Specifics:
 `tests/unit/product-truth.test.ts` fails the build if the copy picks up fake social proof, buzzwords or compliance
 claims, or if the structured data gains `offers`, ratings or reviews.
 
+## Production hardening
+
+- **Security headers** (production only, `next.config.ts`): CSP (`default-src 'self'`, no plugins, no framing,
+  `base-uri`/`form-action` locked; inline scripts/styles allowed because Next.js hydration and Motion/GSAP need them),
+  `X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options`, `Permissions-Policy`, and one-year HSTS without
+  `includeSubDomains`/`preload` (those would commit every subdomain, including the app's, to HTTPS).
+- **404**: `app/not-found.tsx`, branded; Next.js serves it with a 404 status and `noindex`, and it has no canonical.
+- **Contrast**: the app's lightest greys and status colours miss WCAG AA on this site's surfaces at caption sizes, so
+  `globals.css` uses one shade darker (documented there). An axe scan in the e2e suite guards it.
+- **Privacy**: no analytics, cookies, local storage, forms or third-party requests (fonts are self-hosted), so no
+  cookie banner is needed. Add a privacy notice before adding any of those.
+
 ## Before launch
 
-- Set `NEXT_PUBLIC_SITE_URL`. Optionally set `NEXT_PUBLIC_APP_URL` and `NEXT_PUBLIC_CONTACT_EMAIL`.
-- The OG image (`src/app/opengraph-image.tsx`) is generated from brand tokens at build time. Replace it if design
-  produces a final social card.
-- There are no legal pages (privacy policy, terms). Add them before collecting any visitor data.
+- Set `NEXT_PUBLIC_SITE_URL` and at least one of `NEXT_PUBLIC_CONTACT_EMAIL` / `NEXT_PUBLIC_APP_URL` on Vercel
+  (Production environment).
+- After the first deploy: check the share preview with the platform debuggers and submit `/sitemap.xml` in Search
+  Console.
