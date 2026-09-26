@@ -19,7 +19,8 @@ export function SecuritySection() {
           lede="Every request is checked against the role a person holds at the branch they are working in, and every sensitive action leaves a permanent record."
         />
 
-        <div className="mt-16 grid grid-cols-1 gap-6 lg:grid-cols-[1.25fr_1fr]">
+        {/* Side by side only from xl: the role table needs ~620px, more than half the row on smaller laptops. */}
+        <div className="mt-16 grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]">
           <Reveal>
             <div className="overflow-hidden rounded-2xl bg-night-raised ring-1 ring-night-line">
               <div className="border-b border-night-line px-5 py-4">

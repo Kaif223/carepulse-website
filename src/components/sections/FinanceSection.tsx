@@ -57,9 +57,10 @@ export function FinanceSection() {
                       <p className="font-mono text-[11.5px] font-medium text-ink">{tx.type}</p>
                       <p className="truncate text-[12.5px] text-text-muted">
                         {tx.ref} · {tx.method}
-                        <span className="sm:hidden"> · {tx.drawer ? 'in drawer' : 'not in drawer'}</span>
                         {'note' in tx ? ` · ${tx.note}` : ''}
                       </p>
+                      {/* Phones have no room for the badge column, so the drawer status gets its own line. */}
+                      <p className="text-[12px] text-text-muted sm:hidden">{tx.drawer ? 'In drawer' : 'Not in drawer'}</p>
                     </div>
                     <span className="hidden sm:block">
                       <Badge tone={tx.drawer ? 'info' : 'neutral'}>{tx.drawer ? 'In drawer' : 'Not in drawer'}</Badge>

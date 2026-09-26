@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 
 import { LogoMark } from '@/components/brand/Logo';
+import { MoneyFigure } from '@/components/product/MoneyFigure';
 import { SampleDataTag } from '@/components/product/SampleDataTag';
 import { DEMO_BRANCH } from '@/data/demo';
 import { cn } from '@/lib/cn';
@@ -82,46 +83,38 @@ export function ProductWindow({ children, className }: { children: ReactNode; cl
 export function AppShell({
   active,
   children,
-  collapsed = false,
   className,
 }: {
   active: ModuleName;
   children: ReactNode;
-  collapsed?: boolean;
   className?: string;
 }) {
   return (
     <div className={cn('flex bg-background text-[13px] leading-normal text-text', className)}>
-      <aside
-        className={cn(
-          'hidden shrink-0 flex-col border-r border-border bg-surface md:flex',
-          collapsed ? 'w-[60px]' : 'w-[200px]',
-        )}
-      >
-        <div className="flex h-12 items-center gap-2 border-b border-border px-3.5">
+      {/* Tablet widths show the app's collapsed, icon-only sidebar so the screen
+          keeps room for its tables; the full sidebar appears from lg. */}
+      <aside className="hidden w-[60px] shrink-0 flex-col border-r border-border bg-surface md:flex lg:w-[200px]">
+        <div className="flex h-12 items-center justify-center gap-2 border-b border-border px-3.5 lg:justify-start">
           <LogoMark size={22} />
-          {!collapsed && <span className="text-[13px] font-semibold">CarePulse</span>}
+          <span className="hidden text-[13px] font-semibold lg:inline">CarePulse</span>
         </div>
         <nav className="space-y-3.5 px-2.5 py-3.5">
           {NAV.map((group) => (
             <div key={group.label}>
-              {!collapsed && (
-                <p className="mb-1 px-2 text-[9.5px] font-semibold tracking-wider text-text-subtle uppercase">
-                  {group.label}
-                </p>
-              )}
+              <p className="mb-1 hidden px-2 text-[9.5px] font-semibold tracking-wider text-text-subtle uppercase lg:block">
+                {group.label}
+              </p>
               <ul className="space-y-px">
                 {group.items.map(({ label, icon: Icon }) => (
                   <li
                     key={label}
                     className={cn(
-                      'flex h-7 items-center gap-2.5 rounded-md px-2 text-[12px] font-medium',
-                      collapsed && 'justify-center px-0',
+                      'flex h-7 items-center justify-center gap-2.5 rounded-md text-[12px] font-medium lg:justify-start lg:px-2',
                       label === active ? 'bg-primary/10 text-primary' : 'text-text-muted',
                     )}
                   >
                     <Icon className="size-3.5 shrink-0" aria-hidden />
-                    {!collapsed && label}
+                    <span className="hidden lg:inline">{label}</span>
                   </li>
                 ))}
               </ul>
@@ -207,7 +200,9 @@ export function Kpi({
         {label}
       </p>
       <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
-        <p className="text-[18px] font-semibold tracking-[-0.01em] whitespace-nowrap tabular-nums">{value}</p>
+        <p className="text-[15px] font-semibold tracking-[-0.01em] whitespace-nowrap tabular-nums sm:text-[18px]">
+          <MoneyFigure value={value} />
+        </p>
         {badge}
       </div>
       <p className="mt-0.5 text-[10.5px] text-text-subtle">{caption}</p>

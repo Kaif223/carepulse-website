@@ -31,3 +31,4 @@ class NoopObserver {
 window.IntersectionObserver ??= NoopObserver as unknown as typeof IntersectionObserver;
 window.ResizeObserver ??= NoopObserver as unknown as typeof ResizeObserver;
 window.scrollTo = () => undefined;
+Element.prototype.scrollTo ??= () => undefined;

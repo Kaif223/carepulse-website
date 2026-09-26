@@ -18,7 +18,8 @@ export function DashboardScreen() {
   return (
     <AppShell active="Dashboard">
       <PageHeading title="Dashboard" description={`${DEMO_BRANCH.name} · 1 October 2026`} />
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      {/* One column only on the narrowest phones (<360px), where two money figures cannot sit side by side. */}
+      <div className="grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 lg:grid-cols-4">
         <Kpi icon={Receipt} label="Today's sales" value={formatPKR(48320)} caption="126 sales" />
         <Kpi
           icon={Banknote}
@@ -35,14 +36,15 @@ export function DashboardScreen() {
         <Kpi icon={Clock} label="Expiring soon" value="4" caption="batches within 30 days" />
       </div>
 
-      <div className="mt-3 grid grid-cols-1 gap-3 lg:grid-cols-[1.35fr_1fr]">
+      <div className="mt-3 grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
         <MockCard title="Recent sales" icon={Receipt} bodyClassName="p-0">
+          {/* Phones show invoice and amount only; customer and status join from sm. */}
           <table className="w-full text-left text-[11.5px]">
             <thead className="text-[10px] tracking-wide text-text-muted uppercase">
               <tr className="border-b border-border">
                 <th className="px-3.5 py-2 font-medium">Invoice</th>
-                <th className="px-3.5 py-2 font-medium">Customer</th>
-                <th className="px-3.5 py-2 font-medium">Status</th>
+                <th className="hidden px-3.5 py-2 font-medium sm:table-cell">Customer</th>
+                <th className="hidden px-3.5 py-2 font-medium sm:table-cell">Status</th>
                 <th className="px-3.5 py-2 text-right font-medium">Amount</th>
               </tr>
             </thead>
@@ -53,8 +55,8 @@ export function DashboardScreen() {
                   className={'fresh' in sale ? 'hero-fresh-row border-b border-border' : 'border-b border-border last:border-0'}
                 >
                   <td className="px-3.5 py-2 font-medium whitespace-nowrap">{sale.invoice}</td>
-                  <td className="truncate px-3.5 py-2">{sale.customer}</td>
-                  <td className="px-3.5 py-2">
+                  <td className="hidden max-w-[9rem] truncate px-3.5 py-2 sm:table-cell">{sale.customer}</td>
+                  <td className="hidden px-3.5 py-2 sm:table-cell">
                     <Badge tone={sale.status === 'HELD' ? 'warning' : 'success'}>{sale.status}</Badge>
                   </td>
                   <td className="px-3.5 py-2 text-right whitespace-nowrap tabular-nums">{formatPKR(sale.amount)}</td>

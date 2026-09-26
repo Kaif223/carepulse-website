@@ -77,7 +77,7 @@ export function Hero() {
 
       <Container className="relative mt-14 sm:mt-16">
         {/* Bottom room for the receipt card, which hangs below the window on desktop. */}
-        <figure className="pb-10 lg:pb-20">
+        <figure className="pb-10 xl:pb-20">
           <HeroParallax
             window={
               <div className="hero-product" style={delay(560)}>
@@ -89,11 +89,12 @@ export function Hero() {
               </div>
             }
             overlays={
-              <div aria-hidden className="hidden lg:block">
-                <div className="hero-pop absolute -bottom-10 -left-4 w-[272px] xl:-left-10" style={delay(1250)}>
+              // Only from xl: on narrower screens the floating cards would cover the dashboard they annotate.
+              <div aria-hidden className="hidden xl:block">
+                <div className="hero-pop absolute -bottom-10 -left-10 w-[272px]" style={delay(1250)}>
                   <ReceiptCard compact />
                 </div>
-                <div className="hero-pop absolute top-[34%] -right-4 w-[296px] xl:-right-10" style={delay(1450)}>
+                <div className="hero-pop absolute top-[34%] -right-10 w-[296px]" style={delay(1450)}>
                   <FefoChip />
                 </div>
               </div>

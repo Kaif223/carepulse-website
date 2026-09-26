@@ -69,7 +69,8 @@ export function SiteHeader() {
           )}
         >
           <a href="#top" aria-label="CarePulse — back to top" className="rounded-md">
-            <Logo priority />
+            {/* Slightly smaller on phones so the logo, CTA and menu fit on one line. */}
+            <Logo priority className="h-[26px] w-auto sm:h-[30px]" />
           </a>
 
           <ul className="hidden items-center gap-1 lg:flex">

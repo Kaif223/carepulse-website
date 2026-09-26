@@ -44,7 +44,7 @@ export function PlatformIntro() {
         </p>
       </div>
 
-      <div className="mt-16 grid grid-cols-1 gap-5 md:grid-cols-3">
+      <div className="mt-16 grid grid-cols-1 gap-5 xl:grid-cols-3">
         <Reveal>
           <Pillar
             kicker="Packaging"
@@ -54,11 +54,11 @@ export function PlatformIntro() {
             <ul className="divide-y divide-border text-[12.5px]">
               {[...PANADOL.units].reverse().map((unit) => (
                 <li key={unit.name} className="flex items-center justify-between gap-3 py-2">
-                  <span className="font-medium text-ink">{unit.name}</span>
-                  <span className="font-mono text-[11px] text-text-muted">
+                  <span className="font-medium whitespace-nowrap text-ink">{unit.name}</span>
+                  <span className="font-mono text-[11px] whitespace-nowrap text-text-muted">
                     ×{unit.conversionFactor} {PANADOL.baseUnit}
                   </span>
-                  <span className="flex items-center gap-2 tabular-nums">
+                  <span className="flex items-center gap-2 whitespace-nowrap tabular-nums">
                     {formatPKR(unit.sellingPrice)}
                     {unit.name !== 'Tablet' ? (
                       <Barcode className="size-3.5 text-text-subtle" aria-label="Has its own barcode" />
@@ -80,8 +80,8 @@ export function PlatformIntro() {
             <ul className="divide-y divide-border text-[12.5px]">
               {EXPIRY_ROWS.map((row) => (
                 <li key={row.batch} className="flex items-center justify-between gap-3 py-2">
-                  <span className="font-mono text-[11.5px] text-ink">{row.batch}</span>
-                  <span className="text-text-muted tabular-nums">{row.expiry}</span>
+                  <span className="font-mono text-[11.5px] whitespace-nowrap text-ink">{row.batch}</span>
+                  <span className="whitespace-nowrap text-text-muted tabular-nums">{row.expiry}</span>
                   <Badge tone={row.tone}>{row.label}</Badge>
                 </li>
               ))}
@@ -95,9 +95,9 @@ export function PlatformIntro() {
             body="Customer and supplier balances are calculated from their ledgers and can't be typed over. Every rupee owed has a line explaining it."
           >
             <ul className="divide-y divide-border text-[12.5px]">
-              <LedgerRow label="Sale · LHR-2026-000517" amount="+600.00" balance="600.00" />
-              <LedgerRow label="Return · LHR-SR-2026-000031" amount="−120.00" balance="480.00" />
-              <LedgerRow label="Payment · LHR-CP-2026-000088" amount="−480.00" balance="0.00" />
+              <LedgerRow kind="Sale" document="LHR-2026-000517" amount="+600.00" balance="600.00" />
+              <LedgerRow kind="Return" document="LHR-SR-2026-000031" amount="−120.00" balance="480.00" />
+              <LedgerRow kind="Payment" document="LHR-CP-2026-000088" amount="−480.00" balance="0.00" />
             </ul>
           </Pillar>
         </Reveal>
@@ -122,21 +122,27 @@ export function PlatformIntro() {
 
 function Pillar({ kicker, title, body, children }: { kicker: string; title: string; body: string; children: React.ReactNode }) {
   return (
-    <article className="group flex h-full flex-col rounded-2xl border border-border bg-white p-6 transition-[box-shadow,border-color] duration-300 hover:border-border-strong hover:shadow-cp-md sm:p-7">
-      <p className="font-mono text-[11px] font-semibold tracking-[0.14em] text-primary uppercase">{kicker}</p>
-      <h3 className="mt-3 font-display text-[21px] leading-tight font-semibold tracking-[-0.02em] text-ink">{title}</h3>
-      <p className="mt-2.5 text-[14.5px] leading-relaxed text-ink-muted">{body}</p>
-      <div className="mt-auto pt-6">
+    // Below xl, from md, cards are full width with the example beside the text; a third of the row is too narrow for it.
+    <article className="group flex h-full flex-col rounded-2xl border border-border bg-white p-6 transition-[box-shadow,border-color] duration-300 hover:border-border-strong hover:shadow-cp-md sm:p-7 md:max-xl:grid md:max-xl:grid-cols-2 md:max-xl:items-center md:max-xl:gap-8">
+      <div>
+        <p className="font-mono text-[11px] font-semibold tracking-[0.14em] text-primary uppercase">{kicker}</p>
+        <h3 className="mt-3 font-display text-[21px] leading-tight font-semibold tracking-[-0.02em] text-ink">{title}</h3>
+        <p className="mt-2.5 text-[14.5px] leading-relaxed text-ink-muted">{body}</p>
+      </div>
+      <div className="mt-auto pt-6 md:max-xl:pt-0">
         <div className="rounded-xl border border-border bg-background px-3.5 py-1.5">{children}</div>
       </div>
     </article>
   );
 }
 
-function LedgerRow({ label, amount, balance }: { label: string; amount: string; balance: string }) {
+function LedgerRow({ kind, document, amount, balance }: { kind: string; document: string; amount: string; balance: string }) {
   return (
     <li className="flex items-center justify-between gap-3 py-2">
-      <span className="truncate font-mono text-[11px] text-ink">{label}</span>
+      <span className="min-w-0">
+        <span className="block font-medium text-ink">{kind}</span>
+        <span className="block font-mono text-[10.5px] whitespace-nowrap text-text-muted">{document}</span>
+      </span>
       <span className="shrink-0 text-text-muted tabular-nums">{amount}</span>
       <span className="shrink-0 font-medium text-credit tabular-nums">{balance}</span>
     </li>

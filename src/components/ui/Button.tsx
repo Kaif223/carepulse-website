@@ -33,7 +33,7 @@ export function ButtonLink({ variant = 'primary', size = 'md', arrow, className,
   return (
     <a
       className={cn(
-        'group/button inline-flex shrink-0 items-center justify-center rounded-full font-medium tracking-[-0.005em] transition-[background-color,box-shadow,color,transform] duration-200 ease-out active:scale-[0.98]',
+        'group/button inline-flex shrink-0 items-center justify-center rounded-full font-medium whitespace-nowrap tracking-[-0.005em] transition-[background-color,box-shadow,color,transform] duration-200 ease-out active:scale-[0.98]',
         VARIANTS[variant],
         SIZES[size],
         className,

@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
+
 import { AnimatePresence, motion } from 'motion/react';
 import {
   ArrowLeft,
@@ -15,6 +17,7 @@ import {
   User,
 } from 'lucide-react';
 
+import { usePrefersReducedMotion } from '@/components/motion/useMediaQuery';
 import { DEMO_BRANCH, PANADOL, POS_CART, POS_CASH_RECEIVED, POS_DISCOUNT_PERCENT, POS_INVOICE, posTotals } from '@/data/demo';
 import { cn } from '@/lib/cn';
 import { formatPKR } from '@/lib/format';
@@ -41,6 +44,17 @@ export function PosScreen({ step }: { step: number }) {
   const discount = hasDiscount ? totals.discount : 0;
   const grandTotal = subtotal - discount;
 
+  // Where the cart panel is taller than the window (phones, tablets), follow
+  // the cashier: back to the cart for the early steps, down to the payment
+  // fields and Complete Sale button once payment starts.
+  const cartRef = useRef<HTMLElement>(null);
+  const reduceMotion = usePrefersReducedMotion();
+  useEffect(() => {
+    const panel = cartRef.current;
+    if (!panel) return;
+    panel.scrollTo({ top: paid ? panel.scrollHeight : 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+  }, [paid, reduceMotion]);
+
   return (
     <div className="relative flex h-full flex-col bg-background text-[12.5px] text-text">
       <div className="flex h-11 shrink-0 items-center justify-between border-b border-border bg-surface px-3.5">
@@ -56,7 +70,7 @@ export function PosScreen({ step }: { step: number }) {
 
       <div className="grid grid-cols-1 min-h-0 flex-1 md:grid-cols-[1fr_300px]">
         {/* Product search */}
-        <section className={cn('min-w-0 border-border p-3.5 md:block md:border-r', step >= 2 && 'hidden')}>
+        <section className={cn('min-h-0 min-w-0 overflow-y-auto border-border p-3.5 md:block md:border-r', step >= 2 && 'hidden')}>
           <div
             className={cn(
               'relative flex h-9 items-center rounded-md border bg-surface pl-8 transition-[border-color,box-shadow] duration-300',
@@ -131,7 +145,12 @@ export function PosScreen({ step }: { step: number }) {
         </section>
 
         {/* Cart */}
-        <aside className={cn('flex min-w-0 flex-col p-3.5', step < 2 && 'hidden md:flex')}>
+        {/* Scrolls like the real POS cart when the payment fields make it taller than the
+            window; children must not shrink, or the cart list collapses under the discount row. */}
+        <aside
+          ref={cartRef}
+          className={cn('flex min-h-0 min-w-0 flex-col overflow-y-auto p-3.5 *:shrink-0', step < 2 && 'hidden md:flex')}
+        >
           <p className="flex items-center gap-1.5 font-medium">
             <ShoppingCart className="size-3.5" aria-hidden /> Cart
           </p>
