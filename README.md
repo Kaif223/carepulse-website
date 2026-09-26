@@ -36,13 +36,14 @@ needs none of them. **`pnpm build` refuses to run** (a clear error listing every
 
 | Variable | Rule |
 |---|---|
-| `NEXT_PUBLIC_SITE_URL` | **Required.** Public https origin — used for canonical, sitemap, robots and Open Graph. Localhost, placeholders (`*.example`, `YOUR-DOMAIN`) and invalid URLs are rejected. |
+| `NEXT_PUBLIC_SITE_URL` | Public https origin — used for canonical, sitemap, robots and Open Graph. **Required**, except on Vercel, where production falls back to the project's production domain (`VERCEL_PROJECT_PRODUCTION_URL`) and previews to their own URL. Localhost, placeholders (`*.example`, `YOUR-DOMAIN`) and invalid URLs are rejected. |
 | `NEXT_PUBLIC_CONTACT_EMAIL` | Optional, but **at least one** of this and `NEXT_PUBLIC_APP_URL` is required: the closing CTA must do something real. Becomes "Talk to us" (mailto). |
 | `NEXT_PUBLIC_APP_URL` | Optional (see above). Adds "Sign in"; becomes the closing CTA when no email is set. |
 | `SITE_URL_ALLOW_LOCAL` | Local testing only (`=1` lets a build use a localhost origin; the Playwright suite sets it). Never on a deployment. |
 
-Vercel **preview** deployments need no site URL: they use their own `VERCEL_URL` and are served `noindex` with a
-disallow-all `robots.txt`, so previews never reach search engines. Validation lives in `src/lib/site-env.ts` (unit
+On Vercel, **production** builds without `NEXT_PUBLIC_SITE_URL` use the project's production domain, and
+**preview** builds use their own `VERCEL_URL` and are served `noindex` with a disallow-all `robots.txt`, so previews
+never reach search engines. Validation lives in `src/lib/site-env.ts` (unit
 tested) and runs from `next.config.ts`.
 
 ## Structure

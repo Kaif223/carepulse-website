@@ -19,16 +19,24 @@ function clean(value: string | undefined): string | null {
   return trimmed ? trimmed.replace(/\/+$/, '') : null;
 }
 
+/** The origin Vercel itself provides for this deployment, if any. */
+function vercelOrigin(env: Env): string | null {
+  // Production: the project's production domain (custom domain if one is set, else *.vercel.app).
+  if (env.VERCEL_ENV === 'production' && env.VERCEL_PROJECT_PRODUCTION_URL) {
+    return `https://${clean(env.VERCEL_PROJECT_PRODUCTION_URL)}`;
+  }
+  // Preview: the preview's own URL (previews are also noindexed, see isIndexable).
+  if (env.VERCEL_ENV === 'preview' && env.VERCEL_URL) return `https://${clean(env.VERCEL_URL)}`;
+  return null;
+}
+
 /**
  * The public origin used for canonical URLs, the sitemap, robots and Open
- * Graph. Order: the explicit setting; then, on Vercel preview deployments
- * only, the preview's own URL; then localhost for local development.
+ * Graph. Order: the explicit setting; then the origin Vercel provides for the
+ * deployment; then localhost for local development.
  */
 export function resolveSiteUrl(env: Env): string {
-  const explicit = clean(env.NEXT_PUBLIC_SITE_URL);
-  if (explicit) return explicit;
-  if (env.VERCEL_ENV === 'preview' && env.VERCEL_URL) return `https://${clean(env.VERCEL_URL)}`;
-  return DEV_ORIGIN;
+  return clean(env.NEXT_PUBLIC_SITE_URL) ?? vercelOrigin(env) ?? DEV_ORIGIN;
 }
 
 /** Vercel previews must never be indexed, whatever URL they are served on. */
@@ -73,8 +81,7 @@ export function productionConfigProblems(env: Env): string[] {
   const problems: string[] = [];
 
   const explicit = clean(env.NEXT_PUBLIC_SITE_URL);
-  const isPreview = env.VERCEL_ENV === 'preview' && !!env.VERCEL_URL;
-  if (!explicit && !isPreview) {
+  if (!explicit && !vercelOrigin(env)) {
     problems.push('NEXT_PUBLIC_SITE_URL is not set — canonical URLs, the sitemap and Open Graph need the public origin.');
   } else {
     const problem = problemWithUrl('NEXT_PUBLIC_SITE_URL', resolveSiteUrl(env), { allowLocal });

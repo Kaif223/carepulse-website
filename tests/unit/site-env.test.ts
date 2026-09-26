@@ -17,6 +17,12 @@ describe('resolveSiteUrl', () => {
     expect(resolveSiteUrl({ VERCEL_ENV: 'production', VERCEL_URL: 'cp-abc.vercel.app' })).toBe('http://localhost:3000');
   });
 
+  it("uses Vercel's production domain when no site URL is set", () => {
+    const env = { VERCEL_ENV: 'production', VERCEL_URL: 'cp-abc.vercel.app', VERCEL_PROJECT_PRODUCTION_URL: 'carepulse-website.vercel.app' };
+    expect(resolveSiteUrl(env)).toBe('https://carepulse-website.vercel.app');
+    expect(resolveSiteUrl({ ...env, NEXT_PUBLIC_SITE_URL: 'https://carepulse.pk' })).toBe('https://carepulse.pk');
+  });
+
   it('falls back to localhost for local development', () => {
     expect(resolveSiteUrl({})).toBe('http://localhost:3000');
   });
@@ -54,6 +60,12 @@ describe('productionConfigProblems', () => {
     const local = { ...valid, NEXT_PUBLIC_SITE_URL: 'http://localhost:3200' };
     expect(productionConfigProblems(local)).not.toEqual([]);
     expect(productionConfigProblems({ ...local, SITE_URL_ALLOW_LOCAL: '1' })).toEqual([]);
+  });
+
+  it('accepts a Vercel production build without an explicit site URL, but still needs a CTA', () => {
+    const env = { VERCEL_ENV: 'production', VERCEL_PROJECT_PRODUCTION_URL: 'carepulse-website.vercel.app' };
+    expect(productionConfigProblems(env).join('\n')).toMatch(/Neither NEXT_PUBLIC_CONTACT_EMAIL nor NEXT_PUBLIC_APP_URL/);
+    expect(productionConfigProblems({ ...env, NEXT_PUBLIC_CONTACT_EMAIL: 'a@b.pk' })).toEqual([]);
   });
 
   it('accepts a Vercel preview without an explicit site URL', () => {
