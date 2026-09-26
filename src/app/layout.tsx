@@ -31,6 +31,7 @@ export const metadata: Metadata = {
   // Indexable is the default; only Vercel previews opt out (lib/site-env.ts).
   ...(site.indexable ? {} : { robots: { index: false, follow: false } }),
   formatDetection: { telephone: false },
+  ...(site.googleSiteVerification ? { verification: { google: site.googleSiteVerification } } : {}),
 };
 
 export const viewport: Viewport = {

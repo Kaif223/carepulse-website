@@ -14,6 +14,8 @@ const env = {
   VERCEL_PROJECT_PRODUCTION_URL: process.env.VERCEL_PROJECT_PRODUCTION_URL,
 };
 
+const googleSiteVerification = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION?.trim() || null;
+
 export const site = {
   name: 'CarePulse',
   category: 'Pharmacy & Retail Management Platform',
@@ -23,4 +25,6 @@ export const site = {
   url: resolveSiteUrl(env),
   indexable: isIndexable(env),
   locale: 'en_PK',
+  /** Search Console's HTML-tag verification token (the `content` value only). */
+  googleSiteVerification,
 } as const;
